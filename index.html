@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FareShare | Split Instantly</title>
-<link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
     <div class="container">
@@ -17,39 +15,32 @@
 
         <div class="input-card">
             <div class="input-group">
-                <input type="text" id="itemName" placeholder="Item (e.g. Milk)">
-                <input type="number" id="itemPrice" placeholder="$ 0.00" step="0.01">
+                <input type="text" id="itemName" placeholder="Item (e.g. Hotdog)">
+                <input type="number" id="itemPrice" placeholder="Total Price (30.00)" step="0.01">
             </div>
 
-            <div class="toggle-group">
-                <button class="toggle-btn active" onclick="setOwner('Shared', this)">Shared</button>
-                <button class="toggle-btn" onclick="setOwner('Chris', this)">Chris</button>
-                <button class="toggle-btn" onclick="setOwner('Pat', this)">Pat</button>
+            <div class="selection-header">
+                <span class="selection-label">Who is sharing?</span>
+                <button type="button" class="small-btn" onclick="selectAll()">Select All</button>
             </div>
+            
+            <!-- This grid will have Checkbox, Name, and Quantity Input -->
+            <div id="split-group" class="split-grid"></div>
 
             <button id="add-item" onclick="addItem()">Add to Receipt</button>
         </div>
 
         <div class="receipt">
-            <div class="totals">
-                <div class="total-box">
-                    <h3>Chris Pays</h3>
-                    <p id="chrisTotal">$0.00</p>
-                </div>
-                <div class="total-box" style="border-left: 1px solid #e2e8f0;">
-                    <h3>Pat Pays</h3>
-                    <p id="patTotal">$0.00</p>
-                </div>
-            </div>
-            <div id="itemList" class="item-list">
-                <!-- Items appear here -->
-            </div>
+            <div id="totals-container" class="totals-grid"></div>
+            <div id="itemList" class="item-list"></div>
         </div>
-        <button id="reset-btn" onclick="resetAll()">Reset for New Trip</button>
 
+        <div class="action-group">
+            <button id="share-btn" onclick="shareReceipt()">SHARE SUMMARY</button>
+            <button id="reset-btn" onclick="resetAll()">RESET ALL</button>
+        </div>
     </div>
 
-<script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
-
 </html>
