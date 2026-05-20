@@ -1,21 +1,78 @@
-const people = ['Chris', 'Pat', 'Sam', 'Philip']; 
+// Start with your core group of 4
+let people = ['Chris', 'Pat', 'Sam', 'Philip']; 
 let totals = {};
 let receiptItems = [];
 
 function init() {
+    totals = {};
+    people.forEach(person => {
+        totals[person] = 0;
+    });
+    
+    renderPeopleRows();
+    renderTotals();
+}
+
+// Generates the checkboxes, quantity inputs, and individual removal options
+function renderPeopleRows() {
     const splitGroup = document.getElementById('split-group');
     splitGroup.innerHTML = '';
     
     people.forEach(person => {
-        totals[person] = 0;
         splitGroup.innerHTML += `
             <div class="split-row">
                 <input type="checkbox" class="person-check" data-person="${person}">
-                <span>${person}</span>
+                <span class="person-name">${person}</span>
                 <input type="number" class="qty-input" data-person="${person}" placeholder="Qty" min="1">
+                <button type="button" class="remove-person-btn" onclick="removePerson('${person}')" title="Remove ${person}">×</button>
             </div>`;
     });
+}
+
+// Dynamic function to add a person directly from the UI screen
+function addNewPerson() {
+    const nameInput = document.getElementById('newPersonName');
+    const name = nameInput.value.trim();
+
+    if (!name) {
+        alert("Please enter a name!");
+        return;
+    }
+
+    if (people.includes(name)) {
+        alert("This person is already added!");
+        return;
+    }
+
+    people.push(name);
+    totals[name] = 0;
+
+    renderPeopleRows();
     renderTotals();
+    nameInput.value = '';
+}
+
+// Removes a specific person completely from tracking and adjusts receipt history
+function removePerson(nameToRemove) {
+    if (!confirm(`Are you sure you want to remove ${nameToRemove}? This will drop them from calculations.`)) {
+        return;
+    }
+
+    // 1. Remove the individual from the names listing tracking array
+    people = people.filter(p => p !== nameToRemove);
+    
+    // 2. Erase their structural totals property tracking balance
+    delete totals[nameToRemove];
+
+    // 3. Clear out their specific breakdown records inside existing receipt entries
+    receiptItems.forEach(item => {
+        item.splitData = item.splitData.filter(d => d.person !== nameToRemove);
+        item.details = item.details.filter(detailStr => !detailStr.startsWith(`${nameToRemove}:`));
+    });
+
+    // 4. Update interface components seamlessly
+    renderPeopleRows();
+    updateUI();
 }
 
 function selectAll() {
@@ -38,7 +95,6 @@ function addItem() {
         const qtyInput = row.querySelector('.qty-input');
         
         if (checkbox.checked) {
-            // If checked but no qty entered, treat it as 1 piece
             const qty = parseFloat(qtyInput.value) || 1; 
             totalQty += qty;
             breakdown.push({ person: checkbox.dataset.person, qty: qty });
@@ -65,7 +121,6 @@ function addItem() {
 
     updateUI();
     
-    // Reset inputs
     nameInput.value = '';
     priceInput.value = '';
     document.querySelectorAll('.person-check').forEach(cb => cb.checked = false);
@@ -77,7 +132,11 @@ function deleteItem(id) {
     const itemIndex = receiptItems.findIndex(item => item.id === id);
     if (itemIndex > -1) {
         const item = receiptItems[itemIndex];
-        item.splitData.forEach(d => totals[d.person] -= d.share);
+        item.splitData.forEach(d => {
+            if (totals[d.person] !== undefined) {
+                totals[d.person] -= d.share;
+            }
+        });
         receiptItems.splice(itemIndex, 1);
         updateUI();
     }
@@ -117,24 +176,20 @@ function updateUI() {
     });
 }
 
-function shareReceipt() {
-    let message = "🛒 *FareShare Summary* \n\n";
-    people.forEach(p => {
-        message += `👤 *${p}*: $${totals[p].toFixed(2)}\n`;
-    });
-    
-    if (navigator.share) {
-        navigator.share({ title: 'FareShare', text: message });
-    } else {
-        navigator.clipboard.writeText(message);
-        alert("Summary copied to clipboard!");
+function printReceipt() {
+    if (receiptItems.length === 0) {
+        alert("Your receipt is empty! Add items before printing.");
+        return;
     }
+    window.print();
 }
 
 function resetAll() {
     if (confirm("Reset everything?")) {
         receiptItems = [];
-        people.forEach(p => totals[p] = 0);
+        // Revert back to original 4 core group members on standard hard reset
+        people = ['Chris', 'Pat', 'Sam', 'Philip']; 
+        init();
         updateUI();
     }
 }

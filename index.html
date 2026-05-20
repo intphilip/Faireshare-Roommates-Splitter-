@@ -14,9 +14,16 @@
         </header>
 
         <div class="input-card">
+            <!-- Item Details -->
             <div class="input-group">
                 <input type="text" id="itemName" placeholder="Item (e.g. Hotdog)">
                 <input type="number" id="itemPrice" placeholder="Total Price (30.00)" step="0.01">
+            </div>
+
+            <!-- Dynamic Person Adder -->
+            <div class="add-person-group">
+                <input type="text" id="newPersonName" placeholder="Add new friend (e.g. Jumbo)">
+                <button type="button" class="add-inline-btn" onclick="addNewPerson()">+ Add</button>
             </div>
 
             <div class="selection-header">
@@ -24,7 +31,7 @@
                 <button type="button" class="small-btn" onclick="selectAll()">Select All</button>
             </div>
             
-            <!-- This grid will have Checkbox, Name, and Quantity Input -->
+            <!-- This grid holds the Checkbox, Name, and Quantity Inputs -->
             <div id="split-group" class="split-grid"></div>
 
             <button id="add-item" onclick="addItem()">Add to Receipt</button>
@@ -36,7 +43,7 @@
         </div>
 
         <div class="action-group">
-            <button id="share-btn" onclick="shareReceipt()">SHARE SUMMARY</button>
+            <button id="print-btn" onclick="printReceipt()">PRINT RECEIPT</button>
             <button id="reset-btn" onclick="resetAll()">RESET ALL</button>
         </div>
     </div>
